@@ -67,9 +67,13 @@
 </main>
 <script src="/js/app.js"></script>
 <script>
-api('/dashboard/stats?since=' + encodeURIComponent(localMidnightISO())).then(({ data }) => {
-  const set = (id, n, l) => { document.getElementById(id).innerHTML = esc(n) + '<span>' + l + '</span>'; };
-  set('m-users', data.total_users, 'Residents'); set('m-cards', data.authorized_cards, 'Active cards'); set('m-scans', data.todays_scans, 'Taps today');
-}).catch(() => {});
+function loadMeta() {
+  api('/dashboard/stats?since=' + encodeURIComponent(localMidnightISO())).then(({ data }) => {
+    const set = (id, n, l) => { document.getElementById(id).innerHTML = esc(n) + '<span>' + l + '</span>'; };
+    set('m-users', data.total_users, 'Residents'); set('m-cards', data.authorized_cards, 'Active cards'); set('m-scans', data.todays_scans, 'Taps today');
+  }).catch(() => {});
+}
+onDataChange(loadMeta);
+loadMeta();
 </script>
 </body></html>

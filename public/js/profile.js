@@ -25,6 +25,39 @@ function renderFinder(message) {
   });
 }
 
+function mainHtml(p) {
+  return `<div class="avatar" aria-hidden="true">${esc(initials(p.student_name))}</div>
+        <h1>${esc(p.student_name)}</h1><div class="dept">${esc(p.department)}</div>
+        <div class="kv-grid">
+          <div><span>User ID</span><b class="mono">${esc(p.user_id)}</b></div>
+          <div><span>Student ID</span><b class="mono">${esc(p.student_id)}</b></div>
+          <div><span>Room</span><b>${esc(p.room_number)}</b></div>
+          <div><span>Card status</span>${badge(p.card_status)}</div>
+          <div><span>Email</span><b>${esc(p.email)}</b></div>
+          <div><span>Resident since</span><b>${esc(fmtDate(p.created_at))}</b></div>
+        </div>
+        <div class="actions"><a class="btn" href="mailto:${esc(p.email)}">Contact</a>${safeLink(p.linkedin, 'LinkedIn')}${safeLink(p.instagram, 'Instagram')}</div>`;
+}
+
+// Live sync: re-render the details in place when the record changes in the backend; the QR keeps rotating.
+let shownId = '';
+async function refreshProfile() {
+  if (!shownId) return;
+  try {
+    const { data: p } = await api('/profile/' + encodeURIComponent(shownId));
+    const main = document.getElementById('pmain');
+    if (!main) return;
+    document.title = p.student_name + ' — Smart NFC Hostel Access';
+    main.innerHTML = mainHtml(p);
+  } catch (err) {
+    if (err.status !== 404 && err.status !== 400) return; // transient error: keep showing the last known data
+    shownId = '';
+    clearTimeout(live.timer); clearInterval(live.tick); live.userId = ''; live.qr = null;
+    renderFinder('This profile has been removed.');
+  }
+}
+onDataChange(refreshProfile);
+
 async function load() {
   const id = currentId().toUpperCase();
   if (!id) return renderFinder();
@@ -37,23 +70,13 @@ async function load() {
     document.title = p.student_name + ' — Smart NFC Hostel Access';
     view.innerHTML = `<div class="page-head reveal"><div><p class="eyebrow">Verified resident</p></div>
       <div class="actions"><button class="btn alt sm" type="button" id="copy">Copy link</button><a class="btn alt sm" href="/profile.html">Find another</a></div></div>
-      <article class="idcard reveal d1"><div class="main">
-        <div class="avatar" aria-hidden="true">${esc(initials(p.student_name))}</div>
-        <h1>${esc(p.student_name)}</h1><div class="dept">${esc(p.department)}</div>
-        <div class="kv-grid">
-          <div><span>User ID</span><b class="mono">${esc(p.user_id)}</b></div>
-          <div><span>Student ID</span><b class="mono">${esc(p.student_id)}</b></div>
-          <div><span>Room</span><b>${esc(p.room_number)}</b></div>
-          <div><span>Card status</span>${badge(p.card_status)}</div>
-          <div><span>Email</span><b>${esc(p.email)}</b></div>
-          <div><span>Resident since</span><b>${esc(fmtDate(p.created_at))}</b></div>
-        </div>
-        <div class="actions"><a class="btn" href="mailto:${esc(p.email)}">Contact</a>${safeLink(p.linkedin, 'LinkedIn')}${safeLink(p.instagram, 'Instagram')}</div>
+      <article class="idcard reveal d1"><div class="main" id="pmain">${mainHtml(p)}
       </div>
       <div class="side"><div class="qr-box" id="qrcode" role="img" aria-label="QR code linking to this profile"></div>
         <p class="eyebrow" style="margin:6px 0 0">Live QR &middot; scan to verify</p>
         <p class="muted qr-timer" id="qr-timer">Generating code&hellip;</p>
         <div class="qr-progress" aria-hidden="true"><i id="qr-bar"></i></div></div></article>`;
+    shownId = p.user_id;
     startLiveQr(p.user_id);
     document.getElementById('copy').addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(profileUrl(p.user_id)); toast('Profile link copied', 'success'); }

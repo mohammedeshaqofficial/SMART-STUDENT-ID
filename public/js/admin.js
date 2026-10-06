@@ -25,7 +25,7 @@ function renderUsers() {
     <td class="mono">${esc(u.user_id)}</td><td>${esc(u.room_number)}</td><td class="mono">${esc(u.card_uid || '-')}</td>
     <td>${badge(u.card_status)}</td><td title="${esc(fmtBoth(u.last_access))}">${u.last_access ? esc(fmtAgo(u.last_access)) : '<span class="muted">Never</span>'}</td>
     <td><a class="btn sm alt" href="${esc(profileUrl(u.user_id))}">Profile</a>
-    <button class="btn sm alt" data-act="edit" data-id="${esc(u.user_id)}">Edit</button>
+    <a class="btn sm alt" href="/students.html?edit=${encodeURIComponent(u.user_id)}">Edit</a>
     ${u.card_uid ? (u.card_status === 'ACTIVE'
       ? `<button class="btn sm danger" data-act="block" data-uid="${esc(u.card_uid)}" data-name="${esc(u.student_name)}">Block</button>`
       : `<button class="btn sm good" data-act="activate" data-uid="${esc(u.card_uid)}">Activate</button>`) : ''}</td></tr>`).join('');
@@ -40,13 +40,17 @@ async function loadUsers() {
   repUser.value = selected;
 }
 
-let refreshing = false;
+let refreshing = false, again = false;
 async function refresh() {
-  if (refreshing || document.hidden) return;
+  if (document.hidden) return;
+  if (refreshing) { again = true; return; }
   refreshing = true;
   try { await Promise.all([loadStats(), loadUsers()]); }
   catch (err) { tbody.innerHTML = `<tr><td colspan="7"><div class="empty">${esc(err.message)}</div></td></tr>`; }
-  finally { refreshing = false; }
+  finally {
+    refreshing = false;
+    if (again) { again = false; refresh(); }
+  }
 }
 
 filter.addEventListener('input', renderUsers);
@@ -54,36 +58,6 @@ filter.addEventListener('input', renderUsers);
 tbody.addEventListener('click', async (e) => {
   const b = e.target.closest('button[data-act]');
   if (!b) return;
-  if (b.dataset.act === 'edit') {
-    const u = users.find((x) => x.user_id === b.dataset.id);
-    if (!u) return;
-    const fields = [
-      ['student_name', 'Student name', u.student_name],
-      ['student_id', 'Student ID', u.student_id],
-      ['department', 'Department', u.department],
-      ['room_number', 'Room number', u.room_number],
-      ['email', 'Email', u.email],
-      ['linkedin', 'LinkedIn URL', u.linkedin || ''],
-      ['instagram', 'Instagram URL', u.instagram || '']
-    ];
-    const body = {};
-    for (const [key, label, value] of fields) {
-      const next = prompt(label + ':', value);
-      if (next === null) return;
-      body[key] = next.trim();
-    }
-    b.disabled = true;
-    try {
-      const d = await api('/users/' + encodeURIComponent(u.user_id), { method: 'PATCH', body: JSON.stringify(body) });
-      toast(d.message, 'success');
-      await refresh();
-    } catch (err) {
-      toast(err.message, 'error');
-    } finally {
-      b.disabled = false;
-    }
-    return;
-  }
   if (b.dataset.act === 'block' && !confirm(`Block ${b.dataset.name}'s card ${b.dataset.uid}? It will stop opening doors immediately.`)) return;
   b.disabled = true;
   try {
@@ -113,5 +87,7 @@ repForm.addEventListener('submit', async (e) => {
 });
 
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+onDataChange(refresh);
 refresh();
+// Stats include taps, which don't change student data, so keep a slower full refresh too.
 setInterval(refresh, 10000);
