@@ -1,0 +1,16 @@
+[build]
+  publish = "public"
+
+# Shareable profile links: /profile/USR001
+[[redirects]]
+  from = "/profile/*"
+  to = "/profile.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "camera=(self), nfc=(self)"

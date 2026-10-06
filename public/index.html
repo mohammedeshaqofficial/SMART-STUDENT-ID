@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0f1412"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="/css/styles.css"><title>Smart NFC Hostel Access — One Card. One Identity.</title><meta name="description" content="Smart NFC Hostel Access + Digital Identity Card: tap-to-enter hostel access with a verified digital student profile."></head>
+<body data-page="index"><header id="nav"></header>
+<main>
+<section class="hero">
+  <div>
+    <p class="eyebrow reveal">Residents only &middot; Access by invitation</p>
+    <h1 class="reveal d1">One card.<br>One <em>identity.</em><br>Secure access.</h1>
+    <p class="lead reveal d2">Smart NFC Hostel Access pairs every resident with a single NFC card. A tap on the reader opens their door, and the same card unlocks a verified digital profile. The card carries only its UID, never personal data.</p>
+    <div class="actions reveal d3">
+      <a class="btn" href="/scanner.html"><span data-icon="scan"></span>Open the scanner</a>
+      <a class="btn alt" href="/register.html">Register a card</a>
+      <a class="btn alt" href="/admin.html">Dashboard</a>
+    </div>
+    <div class="hero-meta reveal d4">
+      <div id="m-users">&ndash;<span>Residents</span></div>
+      <div id="m-cards">&ndash;<span>Active cards</span></div>
+      <div id="m-scans">&ndash;<span>Taps today</span></div>
+    </div>
+  </div>
+  <div class="hero-visual reveal d2" aria-hidden="true">
+    <div class="rings"><i></i><i></i><i></i></div>
+    <div class="keycard">
+      <div class="kc-top"><div class="kc-brand">Smart NFC Hostel<small>Resident access</small></div><div class="chip"></div></div>
+      <div class="kc-name">Sai Sahithi</div>
+      <div class="kc-row"><div>Room<b>204</b></div><div>User ID<b>USR001</b></div><div>UID<b>04A7&middot;&middot;83</b></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <p class="eyebrow">How a tap travels</p>
+  <h2>From card to <em>decision</em> in under a second.</h2>
+  <div class="flow">
+    <div class="step"><b>NFC card</b><span>13.56 MHz UID</span></div>
+    <div class="step"><b>RC522</b><span>Reads the UID</span></div>
+    <div class="step"><b>ESP32</b><span>Edge controller</span></div>
+    <div class="step"><b>Wi-Fi</b><span>HTTPS request</span></div>
+    <div class="step"><b>Backend</b><span>Serverless API</span></div>
+    <div class="step"><b>Database</b><span>Managed Postgres</span></div>
+    <div class="step"><b>Decision</b><span>Servo, LED, buzzer</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <p class="eyebrow">What residents get</p>
+  <h2>Built for a building that <em>knows</em> who belongs.</h2>
+  <div class="features">
+    <div class="card wide"><span data-icon="nfc"></span><h3>Tap-to-enter access</h3><p>Hold the card to the RC522 reader. The ESP32 asks the backend, then the servo unlocks or stays shut.</p></div>
+    <div class="card wide"><span data-icon="scan"></span><h3>Web scanner</h3><p>Verify cards from any phone: tap with Web NFC on Android, scan a profile QR code, or type a UID at the front desk.</p></div>
+    <div class="card"><span data-icon="id"></span><h3>Digital identity</h3><p>A shareable resident profile with a QR code, linked to the card.</p></div>
+    <div class="card"><span data-icon="lock"></span><h3>Nothing on the card</h3><p>Student data lives in the database. The card holds only its UID.</p></div>
+    <div class="card"><span data-icon="bolt"></span><h3>Real-time checks</h3><p>Every tap is verified live, so a blocked card stops working at once.</p></div>
+    <div class="card wide"><span data-icon="log"></span><h3>Complete access history</h3><p>Granted and denied attempts are logged with time, room, reason and source, then searchable and exportable.</p></div>
+    <div class="card wide"><span data-icon="shield"></span><h3>Warden control</h3><p>Block a lost card in one click, re-activate it, or issue a replacement that retires the old one.</p></div>
+  </div>
+</section>
+
+<section class="section split">
+  <p class="quote">&ldquo;The card stores only its unique UID. The same UID links to a User ID and the resident's digital profile, connecting hostel access with digital identity.&rdquo;</p>
+  <div class="card">
+    <p class="eyebrow">Try it now</p>
+    <h3>Simulate a tap</h3>
+    <p style="margin:6px 0 18px">No reader on hand? Open the scanner and use a demo card: <span class="mono">04A7B29183</span> is authorized, <span class="mono">04B1C2D3E4</span> is blocked, <span class="mono">DEADBEEF99</span> is unknown.</p>
+    <a class="btn" href="/scanner.html?mode=manual">Go to scanner <span data-icon="arrow"></span></a>
+  </div>
+</section>
+</main>
+<script src="/js/app.js"></script>
+<script>
+api('/dashboard/stats?since=' + encodeURIComponent(localMidnightISO())).then(({ data }) => {
+  const set = (id, n, l) => { document.getElementById(id).innerHTML = esc(n) + '<span>' + l + '</span>'; };
+  set('m-users', data.total_users, 'Residents'); set('m-cards', data.authorized_cards, 'Active cards'); set('m-scans', data.todays_scans, 'Taps today');
+}).catch(() => {});
+</script>
+</body></html>

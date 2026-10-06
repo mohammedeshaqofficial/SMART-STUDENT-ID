@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0f1412"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="/css/styles.css"><title>Register a Card — Smart NFC Hostel Access</title></head>
+<body data-page="register"><header id="nav"></header>
+<main>
+<div class="page-head"><div><p class="eyebrow">New resident</p><h1>Card <em>registration</em></h1>
+<p class="sub">Link a resident to their NFC card. A User ID such as USR004 is generated automatically, and their digital profile goes live at once.</p></div></div>
+<div class="reg">
+  <div>
+  <form id="regForm" class="card" novalidate>
+    <div class="row">
+      <div class="field"><label for="student_name">Student name</label><input id="student_name" name="student_name" placeholder="Sai Sahithi" autocomplete="name" required maxlength="80"><div class="err"></div></div>
+      <div class="field"><label for="student_id">Student ID</label><input id="student_id" name="student_id" placeholder="26XXXX" required maxlength="20"><div class="err"></div></div>
+      <div class="field"><label for="department">Department</label><input id="department" name="department" placeholder="ECE - VLSI" required maxlength="80"><div class="err"></div></div>
+      <div class="field"><label for="room_number">Room number</label><input id="room_number" name="room_number" placeholder="204" required maxlength="10"><div class="err"></div></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="name@college.edu" autocomplete="email" required maxlength="120"><div class="err"></div></div>
+      <div class="field"><label for="card_uid">NFC card UID</label><input id="card_uid" name="card_uid" class="mono" placeholder="04A7B29183" required maxlength="40" autocomplete="off" spellcheck="false"><div class="hint">Colons and spaces are fine: 04:a7:b2:91:83</div><div class="err"></div></div>
+      <div class="field"><label for="linkedin">LinkedIn <span class="opt">(optional)</span></label><input id="linkedin" name="linkedin" type="url" placeholder="https://linkedin.com/in/..."><div class="err"></div></div>
+      <div class="field"><label for="instagram">Instagram <span class="opt">(optional)</span></label><input id="instagram" name="instagram" type="url" placeholder="https://instagram.com/..."><div class="err"></div></div>
+    </div>
+    <div class="actions" style="margin-top:6px"><button id="submitBtn" class="btn" type="submit">Register card</button><button id="readBtn" class="btn alt" type="button" hidden><span data-icon="nfc"></span>Read UID with phone</button></div>
+  </form>
+  <div id="result" aria-live="polite"></div>
+  </div>
+  <aside class="card aside-card">
+    <p class="eyebrow">How it works</p><h3>Three quiet steps</h3>
+    <ol><li>Read the card's UID on the ESP32 Serial Monitor, the scanner page, or with your phone.</li>
+    <li>Fill in the resident's details and register.</li>
+    <li>The card opens the door right away, and the profile is shareable by QR.</li></ol>
+    <p style="margin-top:14px;font-size:.85rem">Only the UID is linked to the card. Personal details stay in the database.</p>
+  </aside>
+</div>
+</main>
+<script src="/js/app.js"></script><script src="/js/register.js"></script></body></html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0f1412"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="/css/styles.css"><title>Access Logs — Smart NFC Hostel Access</title></head>
+<body data-page="logs"><header id="nav"></header>
+<main>
+<div class="page-head"><div><p class="eyebrow">Audit trail</p><h1>Access <em>logs</em></h1>
+<p class="sub">Every tap, granted or denied, from the door reader and the web scanner. The latest 500 events are shown.</p></div><span class="live">Live</span></div>
+<div class="toolbar">
+  <input id="q" placeholder="Search name, User ID or UID" aria-label="Search logs">
+  <select id="status" aria-label="Filter by result"><option value="">All results</option><option value="GRANTED">Granted</option><option value="DENIED">Denied</option></select>
+  <span class="spacer"></span>
+  <span class="muted" id="count" style="font-size:.85rem"></span>
+  <button id="export" class="btn alt sm" type="button">Export CSV</button>
+  <button id="refresh" class="btn alt sm" type="button">Refresh</button>
+</div>
+<div class="table-wrap"><table><thead><tr><th>Resident</th><th>User ID</th><th>Card UID</th><th>Room</th><th>Result</th><th>Reason</th><th>Source</th><th>Date</th><th>Time</th></tr></thead>
+<tbody id="rows"><tr><td colspan="9"><span class="skel" style="width:100%"></span></td></tr><tr><td colspan="9"><span class="skel" style="width:100%"></span></td></tr><tr><td colspan="9"><span class="skel" style="width:100%"></span></td></tr></tbody></table></div>
+</main>
+<script src="/js/app.js"></script><script src="/js/access-logs.js"></script></body></html>

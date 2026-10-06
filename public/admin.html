@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0f1412"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="/css/styles.css"><title>Dashboard — Smart NFC Hostel Access</title></head>
+<body data-page="admin"><header id="nav"></header>
+<main>
+<div class="page-head"><div><p class="eyebrow">Warden's office</p><h1>Residence <em>dashboard</em></h1>
+<p class="sub">Live numbers for today, every registered resident, and one-click card control.</p></div><span class="live">Auto-refreshing</span></div>
+<div class="stats">
+  <div class="stat"><div class="num" id="s-users"><span class="skel" style="width:50px;height:36px"></span></div><div class="lbl">Residents</div></div>
+  <div class="stat"><div class="num" id="s-cards"><span class="skel" style="width:50px;height:36px"></span></div><div class="lbl">Active cards</div></div>
+  <div class="stat"><div class="num" id="s-scans"><span class="skel" style="width:50px;height:36px"></span></div><div class="lbl">Taps today</div></div>
+  <div class="stat warn"><div class="num" id="s-denied"><span class="skel" style="width:50px;height:36px"></span></div><div class="lbl">Denied today</div></div>
+</div>
+
+<div class="page-head" style="margin:44px 0 16px"><h2>Residents</h2>
+<div class="toolbar" style="margin:0"><input id="filter" placeholder="Filter by name, room, ID or UID" aria-label="Filter residents"><a class="btn sm" href="/register.html">Add resident</a></div></div>
+<div class="table-wrap"><table><thead><tr><th>Resident</th><th>User ID</th><th>Room</th><th>Card UID</th><th>Status</th><th>Last access</th><th>Actions</th></tr></thead>
+<tbody id="rows"><tr><td><span class="skel" style="width:140px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:30px"></span></td><td><span class="skel" style="width:90px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:110px"></span></td><td><span class="skel" style="width:120px"></span></td></tr><tr><td><span class="skel" style="width:140px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:30px"></span></td><td><span class="skel" style="width:90px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:110px"></span></td><td><span class="skel" style="width:120px"></span></td></tr><tr><td><span class="skel" style="width:140px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:30px"></span></td><td><span class="skel" style="width:90px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:110px"></span></td><td><span class="skel" style="width:120px"></span></td></tr></tbody></table></div>
+
+<div class="panel-grid">
+  <form class="card" id="replaceForm" novalidate>
+    <p class="eyebrow">Lost card</p><h3>Issue a replacement</h3>
+    <p style="margin:4px 0 18px">The new card becomes active and every older card for that resident is blocked.</p>
+    <div class="field"><label for="rep-user">Resident</label><select id="rep-user" name="user_id" required><option value="">Select a resident</option></select></div>
+    <div class="field"><label for="rep-uid">New card UID</label><input id="rep-uid" name="card_uid" class="mono" placeholder="04C3D2E1F0" maxlength="40" autocomplete="off" spellcheck="false"><div class="err" id="rep-err"></div></div>
+    <button class="btn" type="submit" id="rep-btn">Assign card</button>
+  </form>
+  <div class="card">
+    <p class="eyebrow">Quick links</p><h3>Front desk tools</h3>
+    <p style="margin:4px 0 18px">Verify a visitor at the gate, or review every attempt in the full log.</p>
+    <div class="actions"><a class="btn" href="/scanner.html"><span data-icon="scan"></span>Open scanner</a><a class="btn alt" href="/access-logs.html">Access logs</a></div>
+  </div>
+</div>
+</main>
+<script src="/js/app.js"></script><script src="/js/admin.js"></script></body></html>
