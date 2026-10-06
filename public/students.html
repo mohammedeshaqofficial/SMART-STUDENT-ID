@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0f1412"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="/css/styles.css"><title>Student Data — Smart NFC Hostel Access</title></head>
+<body data-page="students"><header id="nav"></header>
+<main>
+<div class="page-head"><div><p class="eyebrow">Backend &middot; student records</p><h1>Student <em>data</em></h1>
+<p class="sub">The source of truth for every resident. Add, edit or remove a student here and every open page (profiles, dashboard, scanner, home) updates on its own.</p></div>
+<div class="actions" style="align-items:center"><span class="live" id="sync">Live sync</span><button class="btn" type="button" id="add"><span data-icon="plus"></span>Add student</button></div></div>
+
+<div class="toolbar"><input id="filter" placeholder="Search name, ID, department, room, email" aria-label="Search students"><span class="spacer"></span><span class="muted" id="count" style="font-size:.85rem"></span></div>
+<div class="table-wrap"><table><thead><tr><th>Student</th><th>User ID</th><th>Student ID</th><th>Room</th><th>Card</th><th>Updated</th><th>Actions</th></tr></thead>
+<tbody id="rows"><tr><td><span class="skel" style="width:150px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:80px"></span></td><td><span class="skel" style="width:30px"></span></td><td><span class="skel" style="width:70px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:140px"></span></td></tr><tr><td><span class="skel" style="width:150px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:80px"></span></td><td><span class="skel" style="width:30px"></span></td><td><span class="skel" style="width:70px"></span></td><td><span class="skel" style="width:60px"></span></td><td><span class="skel" style="width:140px"></span></td></tr></tbody></table></div>
+</main>
+
+<dialog id="editor" class="sheet" aria-labelledby="ed-title">
+  <form id="edForm" method="dialog" novalidate>
+    <div class="sheet-head"><div><p class="eyebrow" id="ed-eyebrow">New record</p><h3 id="ed-title">Add a student</h3></div>
+      <button class="btn sm alt" type="button" data-close aria-label="Close">Close</button></div>
+    <div class="row">
+      <div class="field"><label for="f-name">Student name</label><input id="f-name" name="student_name" maxlength="80" required autocomplete="off"></div>
+      <div class="field"><label for="f-sid">Student ID</label><input id="f-sid" name="student_id" class="mono" maxlength="20" required autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label for="f-dept">Department</label><input id="f-dept" name="department" maxlength="80" required></div>
+      <div class="field"><label for="f-room">Room number</label><input id="f-room" name="room_number" maxlength="10" required></div>
+      <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" maxlength="120" required></div>
+      <div class="field" id="uid-field"><label for="f-uid">NFC card UID</label><input id="f-uid" name="card_uid" class="mono" maxlength="40" placeholder="04A7B29183" autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label for="f-li">LinkedIn <span class="opt">(optional)</span></label><input id="f-li" name="linkedin" type="url" placeholder="https://linkedin.com/in/..."></div>
+      <div class="field"><label for="f-ig">Instagram <span class="opt">(optional)</span></label><input id="f-ig" name="instagram" type="url" placeholder="https://instagram.com/..."></div>
+    </div>
+    <div class="err" id="ed-err" role="alert"></div>
+    <div class="actions" style="margin-top:16px"><button class="btn" type="submit" id="ed-save">Save student</button><button class="btn alt" type="button" data-close>Cancel</button></div>
+  </form>
+</dialog>
+<script src="/js/app.js"></script><script src="/js/students.js"></script></body></html>

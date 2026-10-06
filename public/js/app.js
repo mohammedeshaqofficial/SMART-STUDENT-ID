@@ -10,8 +10,50 @@ async function api(path, options) {
   }
   let data;
   try { data = await res.json(); } catch (e) { throw new Error('Unexpected response from server (' + res.status + ').'); }
-  if (!res.ok || data.success === false) throw new Error(data.message || data.reason || 'Request failed.');
+  if (!res.ok || data.success === false) {
+    const err = new Error(data.message || data.reason || 'Request failed.');
+    err.status = res.status;
+    throw err;
+  }
+  const method = String((options && options.method) || 'GET').toUpperCase();
+  if (method !== 'GET' && /^\/(users|cards|register)/.test(path)) notifyDataChanged();
   return data;
+}
+
+// Live sync: pages register callbacks with onDataChange() that run whenever student data changes.
+// Writes from this browser reach other open tabs instantly (BroadcastChannel); changes made anywhere
+// else are picked up by polling the cheap /api/changes version stamp.
+const liveSync = { handlers: [], version: null, started: false, checking: false, again: false,
+  channel: 'BroadcastChannel' in window ? new BroadcastChannel('student-data') : null };
+function onDataChange(fn) {
+  liveSync.handlers.push(fn);
+  if (liveSync.started) return;
+  liveSync.started = true;
+  if (liveSync.channel) liveSync.channel.onmessage = () => checkForChanges();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) checkForChanges(); });
+  setInterval(checkForChanges, 4000);
+  checkForChanges();
+}
+function notifyDataChanged() {
+  if (liveSync.channel) liveSync.channel.postMessage('changed');
+  checkForChanges();
+}
+async function checkForChanges() {
+  if (!liveSync.started || document.hidden) return;
+  if (liveSync.checking) { liveSync.again = true; return; }
+  liveSync.checking = true;
+  try {
+    const { version } = await api('/changes');
+    const first = liveSync.version === null;
+    if (version !== liveSync.version) {
+      liveSync.version = version;
+      if (!first) liveSync.handlers.forEach((fn) => { try { fn(); } catch (e) { console.error(e); } });
+    }
+  } catch (e) { /* offline or server hiccup: try again on the next tick */ }
+  finally {
+    liveSync.checking = false;
+    if (liveSync.again) { liveSync.again = false; checkForChanges(); }
+  }
 }
 
 function esc(s) {
@@ -53,6 +95,8 @@ const ICONS = {
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
   cross: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   arrow: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  edit: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>',
+  plus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   menu: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
 };
 
@@ -69,7 +113,7 @@ function toast(message, type) {
 (function renderChrome() {
   document.querySelectorAll('[data-icon]').forEach((el) => { el.outerHTML = ICONS[el.dataset.icon] || ''; });
   const page = document.body.dataset.page;
-  const links = [['index', '/', 'Home'], ['register', '/register.html', 'Register'], ['profile', '/profile.html', 'Profile'],
+  const links = [['index', '/', 'Home'], ['register', '/register.html', 'Register'], ['profile', '/profile.html', 'Profile'], ['students', '/students.html', 'Students'],
     ['admin', '/admin.html', 'Dashboard'], ['logs', '/access-logs.html', 'Access Logs']];
   const nav = document.getElementById('nav');
   if (nav) {

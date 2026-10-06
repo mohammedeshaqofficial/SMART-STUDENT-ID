@@ -283,3 +283,14 @@ td .who small{display:block;font-weight:400;color:var(--faint);font-size:.78rem}
 .verdict.ok .chip{color:var(--jade)}.verdict.bad .chip{color:var(--clay)}
 .scan-upload{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 .scan-upload input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+
+/* Student data editor + live-sync highlight */
+.sheet{width:min(720px,94vw);max-height:92vh;padding:0;border:1px solid var(--line-2);border-radius:var(--r);background:linear-gradient(180deg,var(--panel),var(--ink-2));color:var(--ivory);box-shadow:0 40px 80px -30px #000}
+.sheet::backdrop{background:#0a0d0cb8;backdrop-filter:blur(3px)}
+.sheet[open]{animation:rise .35s var(--ease) both}
+.sheet form{padding:26px}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+.sheet .err{font-size:.85rem;color:var(--clay);min-height:1.2em}
+.field[hidden]{display:none}
+tbody tr.flash{animation:flash 2.4s var(--ease)}
+@keyframes flash{0%,30%{background:#c9a96a22}100%{background:transparent}}

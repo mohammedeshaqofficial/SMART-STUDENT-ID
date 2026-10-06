@@ -4,5 +4,5 @@ export default async () => Response.json({ success: false, message: "Route not f
 
 export const config: Config = {
   path: "/api/*",
-  excludedPath: ["/api/register", "/api/profile/*", "/api/users", "/api/verify-card", "/api/access-logs", "/api/cards", "/api/cards/*", "/api/dashboard/stats", "/api/qr-token", "/api/verify-qr"],
+  excludedPath: ["/api/register", "/api/profile/*", "/api/users", "/api/users/*", "/api/changes", "/api/verify-card", "/api/access-logs", "/api/cards", "/api/cards/*", "/api/dashboard/stats", "/api/qr-token", "/api/verify-qr"],
 };

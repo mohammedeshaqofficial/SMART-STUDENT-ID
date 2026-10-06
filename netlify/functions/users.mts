@@ -4,12 +4,6 @@ import { db } from "../../db/index.js";
 import { accessLogs, cards, users } from "../../db/schema.js";
 import { ApiError, handle, isUniqueViolation, json, readBody, validUrl } from "../lib/http.js";
 
-async function nextUserId() {
-  const rows = await db.select({ userId: users.userId }).from(users);
-  const maxId = rows.reduce((m, r) => Math.max(m, parseInt(r.userId.slice(3), 10) || 0), 0);
-  return "USR" + String(maxId + 1).padStart(3, "0");
-}
-
 function validatePatch(b: Record<string, unknown>) {
   const t = (k: string) => String(b[k] == null ? "" : b[k]).trim();
   const d: Record<string, string> = {};
@@ -26,10 +20,23 @@ function validatePatch(b: Record<string, unknown>) {
   return d;
 }
 
-export default handle(["GET", "PATCH"], async (req, params) => {
+const parseUserId = (raw: unknown) => {
+  const userId = String(raw || "").trim().toUpperCase();
+  if (!/^USR\d{3,}$/.test(userId)) throw new ApiError(400, "Invalid User ID");
+  return userId;
+};
+
+export default handle(["GET", "PATCH", "DELETE"], async (req, params) => {
+  // DELETE /api/users/:userId — removes the student; their cards and QR tokens cascade, access logs are kept for audit.
+  if (req.method === "DELETE") {
+    const userId = parseUserId(params.userId);
+    const deleted = await db.delete(users).where(eq(users.userId, userId)).returning({ userId: users.userId });
+    if (!deleted.length) throw new ApiError(404, "Student not found");
+    return json({ success: true, message: `Student ${userId} deleted`, user_id: userId });
+  }
+
   if (req.method === "PATCH") {
-    const userId = String(params.userId || "").trim().toUpperCase();
-    if (!/^USR\d{3,}$/.test(userId)) throw new ApiError(400, "Invalid User ID");
+    const userId = parseUserId(params.userId);
     const body = await readBody(req);
     const d = validatePatch(body);
     if (!Object.keys(d).length) throw new ApiError(400, "No student fields supplied");
@@ -52,6 +59,8 @@ export default handle(["GET", "PATCH"], async (req, params) => {
       throw err;
     }
   }
+
+  if (params.userId) throw new ApiError(404, "Route not found");
 
   const [allUsers, allCards, lastSeen] = await Promise.all([
     db.select().from(users).orderBy(asc(users.id)),
